@@ -1,6 +1,10 @@
 
-param ($CXX_STANDARD = 17,
-       $GPU_ARCHS = "70")
+Param(
+    [Alias("cxx")]
+    [int]$CXX_STANDARD = 17,
+    [Alias("archs")]
+    [string]$GPU_ARCHS = "70"
+)
 
 $CURRENT_PATH = Split-Path $pwd -leaf
 If($CURRENT_PATH -ne "ci") {

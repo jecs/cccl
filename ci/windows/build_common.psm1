@@ -1,13 +1,20 @@
 
-param ($CXX_STANDARD,
-       $GPU_ARCHS)
+Param(
+    [Parameter(Mandatory)]
+    [Alias("cxx")]
+    [int]$CXX_STANDARD = 17,
+    [Parameter(Mandatory)]
+    [Alias("archs")]
+    [string]$GPU_ARCHS = "70"
+)
+
 
 # We need the full path to cl because otherwise cmake will replace CMAKE_CXX_COMPILER with the full path
 # and keep CMAKE_CUDA_HOST_COMPILER at "cl" which breaks our cmake script
 $script:HOST_COMPILER  = (Get-Command "cl").source -replace '\\','/'
 $script:PARALLEL_LEVEL = (Get-WmiObject -class Win32_processor).NumberOfLogicalProcessors
 
-If($null -eq $DEVCONTAINER_NAME) {
+If($null -eq $env:DEVCONTAINER_NAME) {
     $script:BUILD_DIR="../build/local"
 } else {
     $script:BUILD_DIR="../build/$DEVCONTAINER_NAME"
