@@ -148,6 +148,7 @@ set(files
   __nullptr
   __ranges/access.h
   __ranges/concepts.h
+  __ranges/dangling.h
   __ranges/data.h
   __ranges/empty.h
   __ranges/enable_borrowed_range.h
