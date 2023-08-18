@@ -817,7 +817,7 @@ public:
     __remove_return_type remove(const value_type& __v);
     template <class _Predicate> __remove_return_type remove_if(_Predicate __pred);
     _LIBCUDACXX_INLINE_VISIBILITY
-    __remove_return_type unique() {return unique(__equal_to<value_type>());}
+    __remove_return_type unique() {return unique(__equal_to());}
     template <class _BinaryPredicate> __remove_return_type unique(_BinaryPredicate __binary_pred);
     _LIBCUDACXX_INLINE_VISIBILITY
     void merge(forward_list&& __x) {merge(__x, __less<value_type>());}
@@ -1498,7 +1498,7 @@ forward_list<_Tp, _Alloc>::remove(const value_type& __v)
         else
             ++__i;
     }
-    
+
     return (__remove_return_type) __count_removed;
 }
 
@@ -1526,7 +1526,7 @@ forward_list<_Tp, _Alloc>::remove_if(_Predicate __pred)
         else
             ++__i;
     }
-    
+
     return (__remove_return_type) __count_removed;
 }
 
@@ -1546,7 +1546,7 @@ forward_list<_Tp, _Alloc>::unique(_BinaryPredicate __binary_pred)
             __deleted_nodes.splice_after(__deleted_nodes.before_begin(), *this, __i, __j);
         __i = __j;
     }
-    
+
     return (__remove_return_type) __count_removed;
 }
 
