@@ -20,12 +20,11 @@ jobs:
       matrix:
         include: ${{ fromJSON(inputs.per_cuda_compiler_matrix) }}
     with:
-      compiler: ${{ matrix.compiler.name }}
       compiler_exe: ${{ matrix.compiler.exe }}
-      compiler_version: ${{ matrix.compiler.version }}
       std: ${{ matrix.std }}
       gpu_build_archs: ${{ matrix.gpu_build_archs }}
       cpu: ${{ matrix.cpu }}
+      test_name: ${{matrix.compiler.name}}${{matrix.compiler.version}}/C++${{matrix.std}}
       build_script: ${{ inputs.build_script }}
       test_script: ${{ inputs.test_script }}
       run_tests: ${{ contains(matrix.jobs, 'test') && !contains(github.event.head_commit.message, 'skip-tests') && matrix.os != 'windows' }}
