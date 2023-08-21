@@ -20,13 +20,10 @@ jobs:
       matrix:
         include: ${{ fromJSON(inputs.per_cuda_compiler_matrix) }}
     with:
-      compiler_exe: ${{ matrix.compiler.exe }}
-      std: ${{ matrix.std }}
-      gpu_build_archs: ${{ matrix.gpu_build_archs }}
       cpu: ${{ matrix.cpu }}
       test_name: ${{matrix.compiler.name}}${{matrix.compiler.version}}/C++${{matrix.std}}
-      build_script: ${{ inputs.build_script }}
-      test_script: ${{ inputs.test_script }}
+      build_script: "${{ inputs.build_script }} ${{matrix.compiler.exe}} ${{matrix.std}} ${{matrix.gpu_build_archs}}"
+      test_script:  "${{ inputs.test_script }}  ${{matrix.compiler.exe}} ${{matrix.std}} ${{matrix.gpu_build_archs}}"
       run_tests: ${{ contains(matrix.jobs, 'test') && !contains(github.event.head_commit.message, 'skip-tests') && matrix.os != 'windows' }}
       container_image: rapidsai/devcontainers:${{inputs.devcontainer_version}}-cpp-${{matrix.compiler.name}}${{matrix.compiler.version}}-cuda${{matrix.cuda}}-${{matrix.os}}
 
