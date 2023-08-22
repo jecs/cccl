@@ -9,7 +9,7 @@ gpus:
   - 'v100'
 
 # The version of the devcontainer images to use from https://hub.docker.com/r/rapidsai/devcontainers
-devcontainer_version: '23.08'
+devcontainer_version: '23.10'
 
 # Each environment below will generate a unique build/test job
 # See the "compute-matrix" job in the workflow for how this is parsed and used
@@ -27,7 +27,6 @@ devcontainer_version: '23.08'
 # Configurations that will run for every PR
 pull_request:
   nvcc:
-    - {cuda: *cuda_newest, os: 'ubuntu22.04', cpu: 'amd64', compiler: {name: 'llvm', version: '15', exe: 'clang++'}, gpu_build_archs: '70', std: [11, 14, 17, 20], jobs: ['build', 'test']}
-    - {cuda: *cuda_newest, os: 'windows',     cpu: 'amd64', compiler: {name: 'cl', version: '1936', exe: 'cl++'}, gpu_build_archs: '70', std: [11, 14, 17, 20], jobs: ['build']}
+    - {cuda: *cuda_newest, os: 'windows-2022',cpu: 'amd64', compiler: {name: 'cl', version: '14.35', exe: 'cl++'}, gpu_build_archs: '70', std: [11, 14, 17, 20], jobs: ['build']}
   nvrtc:
     - {cuda: *cuda_newest, os: 'ubuntu22.04', cpu: 'amd64', gpu_build_archs: '70', std: [11, 14, 17, 20]}
