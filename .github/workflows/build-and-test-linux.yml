@@ -11,8 +11,9 @@ on:
       test_name: {type: string, required: false}
       build_script: {type: string, required: false}
       test_script: {type: string, required: false}
-      run_tests: {type: boolean, required: false, default: true}
       container_image: {type: string, required: false}
+      run_tests: {type: boolean, required: false, default: true}
+      run_linux: {type: boolean, required: false, default: true}
 
 jobs:
   build:
@@ -22,7 +23,7 @@ jobs:
     with:
       name: Build ${{inputs.test_name}}
       runner: linux-${{inputs.cpu}}-cpu16
-      image: ${{inputs.container_image}}
+      image:  ${{ inputs.container_image }}
       command: |
         ${{ inputs.build_script }}
 
