@@ -13,11 +13,9 @@ on:
       test_script: {type: string, required: false}
       container_image: {type: string, required: false}
       run_tests: {type: boolean, required: false, default: true}
-      run_linux: {type: boolean, required: false, default: true}
 
 jobs:
   build:
-    if: inputs.build_script != '' && inputs.container_image != ''
     name: Build ${{inputs.test_name}}
     uses: ./.github/workflows/run-as-coder.yml
     with:
@@ -29,7 +27,7 @@ jobs:
 
   test:
     needs: build
-    if:  ${{ !cancelled() && ( needs.build.result == 'success' || needs.build.result == 'skipped' ) && inputs.test_script != '' && inputs.container_image != '' && inputs.run_tests}}
+    if:  ${{ !cancelled() && ( needs.build.result == 'success' || needs.build.result == 'skipped' ) && inputs.run_tests}}
     name: Test ${{inputs.test_name}}
     uses: ./.github/workflows/run-as-coder.yml
     with:
