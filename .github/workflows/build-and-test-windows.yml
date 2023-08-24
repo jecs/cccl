@@ -14,6 +14,12 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    env:
+      SCCACHE_BUCKET: rapids-sccache-devs
+      SCCACHE_REGION: us-east-2
+      SCCACHE_IDLE_TIMEOUT: 32768
+      SCCACHE_S3_USE_SSL: true
+      SCCACHE_S3_NO_CREDENTIALS: false
     steps:
       - name: Get AWS credentials for sccache bucket
         uses: aws-actions/configure-aws-credentials@v2
@@ -21,21 +27,12 @@ jobs:
           role-to-assume: arn:aws:iam::279114543810:role/gha-oidc-NVIDIA
           aws-region: us-east-2
           role-duration-seconds: 43200 # 12 hours)
-        env:
-          SCCACHE_BUCKET: rapids-sccache-devs
-          SCCACHE_REGION: us-east-2
-          SCCACHE_IDLE_TIMEOUT: 32768
-          SCCACHE_S3_USE_SSL: true
-          SCCACHE_S3_NO_CREDENTIALS: false
-      - name: Checkout cccl
-        uses: actions/checkout@v3
-        with:
-          path: cccl
-          fetch-depth: 0
-          persist-credentials: false
       - name: Fetch ${{ inputs.container_image }}
         shell: powershell
         run: docker pull ${{ inputs.container_image }}
-      - name: Build the tests
+      - name: Fetch the repository
         shell: powershell
-        run:  docker run --mount type=bind,src="cccl",dst="C:\cccl" ${{ inputs.container_image }} "C:\cccl\ci\windows\${{ inputs.build_script }}"
+        run:  docker run ${{ inputs.container_image }} powershell -c "git clone $GITHUB_REPOSITORY --depth 1;
+                                                                      git fetch $GITHUB_REF_NAME --depth 1;
+                                                                      git checkout $GITHUB_REF_NAME;
+                                                                      dir;"
