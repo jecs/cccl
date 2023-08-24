@@ -32,7 +32,8 @@ jobs:
         run: docker pull ${{ inputs.container_image }}
       - name: Fetch the repository
         shell: powershell
-        run:  docker run ${{ inputs.container_image }} powershell -c "git clone $GITHUB_REPOSITORY --depth 1;
-                                                                      git fetch $GITHUB_REF_NAME --depth 1;
-                                                                      git checkout $GITHUB_REF_NAME;
-                                                                      dir;"
+        run:  docker run ${{ inputs.container_image }} powershell -c "git clone https://github.com/NVIDIA/cccl.git;
+                                                                      cd cccl;
+                                                                      git fetch --all;
+                                                                      git checkout ${{github.ref_name}};
+                                                                      ${{inputs.build_script}};"
