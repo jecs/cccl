@@ -38,4 +38,4 @@ jobs:
         run: docker pull ${{ inputs.container_image }}
       - name: Build the tests
         shell: powershell
-        run:  docker run --mount type=bind,src=cccl,dst=C:\cccl ${{ inputs.container_image }} "C:\cccl\ci\windows\${{ inputs.build_script }}"
+        run:  docker run --mount type=bind,src="cccl",dst="C:\cccl" ${{ inputs.container_image }} "C:\cccl\ci\windows\${{ inputs.build_script }}"
