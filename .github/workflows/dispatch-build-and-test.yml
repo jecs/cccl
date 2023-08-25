@@ -39,4 +39,4 @@ jobs:
     with:
       test_name: ${{matrix.compiler.name}}${{matrix.compiler.version}}/C++${{matrix.std}}
       build_script: "./ci/windows/build_${{ inputs.project_name }}.ps1 ${{matrix.std}} ${{matrix.gpu_build_archs}}"
-      container_image: ghcr.io/wmaxey/devcontainers:${{inputs.devcontainer_version}}-cuda${{matrix.cuda}}-${{matrix.compiler.name}}${{matrix.compiler.version}}-${{matrix.os}}
+      container_image: rapidsai/devcontainers:${{inputs.devcontainer_version}}-cuda${{matrix.cuda}}-${{matrix.compiler.name}}${{matrix.compiler.version}}-${{matrix.os}}
