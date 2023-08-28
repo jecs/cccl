@@ -877,4 +877,180 @@ async_contract_fulfillment memcpy_async(void * __destination, void const * __sou
 
 _LIBCUDACXX_END_NAMESPACE_CUDA
 
+_LIBCUDACXX_BEGIN_NAMESPACE_CUDA_EXPERIMENTAL
+
+// - cp_async_bulk_global_to_shared
+// - cp_async_bulk_shared_to_global
+// - cp_async_bulk_tensor_{1,2,3,4,5}d_global_to_shared
+// - cp_async_bulk_tensor_{1,2,3,4,5}d_shared_to_global
+// - fence_proxy_async_shared_cta
+// - cp_async_bulk_commit_group
+// - cp_async_bulk_wait_group_read<0, …, 7>
+
+// https://docs.nvidia.com/cuda/parallel-thread-execution/index.html#data-movement-and-conversion-instructions-cp-async-bulk
+_LIBCUDACXX_DEVICE
+void cp_async_bulk_global_to_shared(void *dest, const void *src, uint32_t size, cuda::barrier<cuda::thread_scope_block> &bar)
+{
+#if (_LIBCUDACXX_DEBUG_LEVEL >= 2)
+    _LIBCUDACXX_DEBUG_ASSERT(size % 16 == 0);
+    _LIBCUDACXX_DEBUG_ASSERT(__isShared(dest));
+    _LIBCUDACXX_DEBUG_ASSERT(__isGlobal(src));
+#endif
+
+  asm volatile(
+    "cp.async.bulk.shared::cluster.global.mbarrier::complete_tx::bytes [%0], [%1], %2, [%3];\n"
+    :
+    : "r"(static_cast<uint32_t>(__cvta_generic_to_shared(dest))),
+      "l"(static_cast<uint64_t>(__cvta_generic_to_global(src))),
+      "r"(size),
+      "r"(static_cast<uint32_t>(__cvta_generic_to_shared(cuda::device::barrier_native_handle(bar))))
+    : "memory");
+}
+
+
+// https://docs.nvidia.com/cuda/parallel-thread-execution/index.html#data-movement-and-conversion-instructions-cp-async-bulk
+_LIBCUDACXX_DEVICE
+void cp_async_bulk_shared_to_global(void *dest, const void * src, uint32_t size)
+{
+  asm volatile(
+    "cp.async.bulk.global.shared::cta.bulk_group [%0], [%1], %2;\n"
+    :
+    : "l"(static_cast<uint64_t>(__cvta_generic_to_global(dest))),
+      "r"(static_cast<uint32_t>(__cvta_generic_to_shared(src))),
+      "r"(size)
+    : "memory");
+}
+
+// https://docs.nvidia.com/cuda/parallel-thread-execution/index.html#data-movement-and-conversion-instructions-cp-async-bulk-tensor
+_LIBCUDACXX_DEVICE
+void cp_async_bulk_tensor_1d_global_to_shared(
+    void *dest, const void *tensor_map , int c0, cuda::barrier<cuda::thread_scope_block> &bar)
+{
+  asm volatile(
+    "cp.async.bulk.tensor.2d.shared::cluster.global.tile.mbarrier::complete_tx::bytes "
+    "[%0], [%1, {%2}], [%3];\n"
+    :
+    : "r"(static_cast<uint32_t>(__cvta_generic_to_shared(dest))),
+      "l"(tensor_map),
+      "r"(c0),
+      "r"(static_cast<uint32_t>(__cvta_generic_to_shared(cuda::device::barrier_native_handle(bar))))
+    : "memory");
+}
+
+// https://docs.nvidia.com/cuda/parallel-thread-execution/index.html#data-movement-and-conversion-instructions-cp-async-bulk-tensor
+_LIBCUDACXX_DEVICE
+void cp_async_bulk_tensor_2d_global_to_shared(
+    void *dest, const void *tensor_map , int c0, int c1, cuda::barrier<cuda::thread_scope_block> &bar)
+{
+  asm volatile(
+    "cp.async.bulk.tensor.2d.shared::cluster.global.tile.mbarrier::complete_tx::bytes "
+    "[%0], [%1, {%2, %3}], [%4];\n"
+    :
+    : "r"(static_cast<uint32_t>(__cvta_generic_to_shared(dest))),
+      "l"(tensor_map),
+      "r"(c0),
+      "r"(c1),
+      "r"(static_cast<uint32_t>(__cvta_generic_to_shared(cuda::device::barrier_native_handle(bar))))
+    : "memory");
+}
+
+// https://docs.nvidia.com/cuda/parallel-thread-execution/index.html#data-movement-and-conversion-instructions-cp-async-bulk-tensor
+_LIBCUDACXX_DEVICE
+void cp_async_bulk_tensor_3d_global_to_shared(
+    void *dest, const void *tensor_map, int c0, int c1, int c2, cuda::barrier<cuda::thread_scope_block> &bar)
+{
+  asm volatile(
+    "cp.async.bulk.tensor.2d.shared::cluster.global.tile.mbarrier::complete_tx::bytes "
+    "[%0], [%1, {%2, %3, %4}], [%5];\n"
+    :
+    : "r"(static_cast<uint32_t>(__cvta_generic_to_shared(dest))),
+      "l"(tensor_map),
+      "r"(c0),
+      "r"(c1),
+      "r"(c2),
+      "r"(static_cast<uint32_t>(__cvta_generic_to_shared(cuda::device::barrier_native_handle(bar))))
+    : "memory");
+}
+
+// https://docs.nvidia.com/cuda/parallel-thread-execution/index.html#data-movement-and-conversion-instructions-cp-async-bulk-tensor
+_LIBCUDACXX_DEVICE
+void cp_async_bulk_tensor_4d_global_to_shared(
+    void *dest, const void *tensor_map , int c0, int c1, int c2, int c3, cuda::barrier<cuda::thread_scope_block> &bar)
+{
+  asm volatile(
+    "cp.async.bulk.tensor.2d.shared::cluster.global.tile.mbarrier::complete_tx::bytes "
+    "[%0], [%1, {%2, %3, %4, %5}], [%6];\n"
+    :
+    : "r"(static_cast<uint32_t>(__cvta_generic_to_shared(dest))),
+      "l"(tensor_map),
+      "r"(c0),
+      "r"(c1),
+      "r"(c2),
+      "r"(c3),
+      "r"(static_cast<uint32_t>(__cvta_generic_to_shared(cuda::device::barrier_native_handle(bar))))
+    : "memory");
+}
+
+// https://docs.nvidia.com/cuda/parallel-thread-execution/index.html#data-movement-and-conversion-instructions-cp-async-bulk-tensor
+_LIBCUDACXX_DEVICE
+void cp_async_bulk_tensor_2d_global_to_shared(
+    void *dest, const void *tensor_map , int c0, int c1, int c2, int c3, int c4, cuda::barrier<cuda::thread_scope_block> &bar)
+{
+  asm volatile(
+    "cp.async.bulk.tensor.2d.shared::cluster.global.tile.mbarrier::complete_tx::bytes "
+    "[%0], [%1, {%2, %3, %4, %5, %6}], [%7];\n"
+    :
+    : "r"(static_cast<uint32_t>(__cvta_generic_to_shared(dest))),
+      "l"(tensor_map),
+      "r"(c0),
+      "r"(c1),
+      "r"(c2),
+      "r"(c3),
+      "r"(c4),
+      "r"(static_cast<uint32_t>(__cvta_generic_to_shared(cuda::device::barrier_native_handle(bar))))
+    : "memory");
+}
+
+// https://docs.nvidia.com/cuda/parallel-thread-execution/index.html#data-movement-and-conversion-instructions-cp-async-bulk-tensor
+_LIBCUDACXX_DEVICE
+void cp_async_bulk_tensor_2d_shared_to_global(
+    const void *tensor_map, int x, int y, const void *src)
+{
+  asm volatile(
+    "cp.async.bulk.tensor.2d.global.shared::cta.tile.bulk_group "
+    "[%0, {%1, %2}], [%3];\n"
+    :
+    : "l"(tensor_map),
+      "r"(x),
+      "r"(y),
+      "r"(static_cast<uint32_t>(__cvta_generic_to_shared(src)))
+    : "memory");
+}
+
+// https://docs.nvidia.com/cuda/parallel-thread-execution/index.html#parallel-synchronization-and-communication-instructions-membar
+_LIBCUDACXX_DEVICE
+void fence_proxy_async_shared_cta() {
+  asm volatile("fence.proxy.async.shared::cta; \n":::"memory");
+}
+
+// https://docs.nvidia.com/cuda/parallel-thread-execution/index.html#data-movement-and-conversion-instructions-cp-async-bulk-commit-group
+_LIBCUDACXX_DEVICE
+void cp_async_bulk_commit_group()
+{
+  asm volatile("cp.async.bulk.commit_group;\n" ::: "memory");
+}
+
+// https://docs.nvidia.com/cuda/parallel-thread-execution/index.html#data-movement-and-conversion-instructions-cp-async-bulk-wait-group
+template <int n_prior>
+_LIBCUDACXX_DEVICE
+void cp_async_bulk_wait_group_read()
+{
+  static_assert(n_prior <= 8, "cp_async_bulk_wait_group_read: waiting for more than 8 groups is not supported.");
+  asm volatile("cp.async.bulk.wait_group.read %0; \n"
+               :
+               : "n"(n_prior));
+}
+
+_LIBCUDACXX_END_NAMESPACE_CUDA_EXPERIMENTAL
+
 #endif // _LIBCUDACXX___CUDA_BARRIER_H
