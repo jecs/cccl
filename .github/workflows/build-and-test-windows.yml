@@ -17,7 +17,7 @@ jobs:
     env:
       SCCACHE_BUCKET: rapids-sccache-devs
       SCCACHE_REGION: us-east-2
-      SCCACHE_IDLE_TIMEOUT: 32768
+      SCCACHE_IDLE_TIMEOUT: 0
       SCCACHE_S3_USE_SSL: true
       SCCACHE_S3_NO_CREDENTIALS: false
     steps:
