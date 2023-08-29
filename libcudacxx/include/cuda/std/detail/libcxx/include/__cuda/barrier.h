@@ -877,6 +877,18 @@ async_contract_fulfillment memcpy_async(void * __destination, void const * __sou
 
 _LIBCUDACXX_END_NAMESPACE_CUDA
 
+
+// Forward-declare CUtensorMap for use in cp_async_bulk_tensor_* PTX wrapping
+// functions. These functions take a pointer to CUtensorMap, so do not need to
+// know its size. This type is defined in cuda.h (driver API) as:
+//
+//     typedef struct CUtensorMap_st {  [ .. snip .. ] } CUtensorMap;
+//
+// We need to forward-declare both CUtensorMap_st (the struct) and CUtensorMap
+// (the typedef):
+struct CUtensorMap_st;
+typedef struct CUtensorMap_st CUtensorMap;
+
 _LIBCUDACXX_BEGIN_NAMESPACE_CUDA_EXPERIMENTAL
 
 // - cp_async_bulk_global_to_shared
