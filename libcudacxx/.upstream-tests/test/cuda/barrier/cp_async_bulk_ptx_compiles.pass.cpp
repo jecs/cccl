@@ -21,7 +21,7 @@
 TEST_NV_DIAG_SUPPRESS(static_var_with_dynamic_init)
 
 using barrier = cuda::barrier<cuda::thread_scope_block>;
-namespace cde=cuda::device::experimental;
+namespace cde = cuda::device::experimental;
 
 // Kernels below are intended to be compiled, but not run. This is to check if
 // all generated PTX is valid.
