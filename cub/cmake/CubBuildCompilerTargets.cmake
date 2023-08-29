@@ -13,7 +13,7 @@ function(cub_build_compiler_targets)
 
   if ("MSVC" STREQUAL "${CMAKE_CXX_COMPILER_ID}")
     list(APPEND cxx_compile_definitions _ENABLE_EXTENDED_ALIGNED_STORAGE)
-    list(APPEND cuda_compile_options "--use-local-env")
+    list(APPEND cuda_compile_options "-use-local-env")
 
     append_option_if_available("/W4" cxx_compile_options)
 
@@ -137,7 +137,7 @@ function(cub_build_compiler_targets)
     # Use the local env instead of rebuilding it all the time
     target_compile_options(cub.compiler_interface INTERFACE
       # If using CUDA w/ NVCC...
-      $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:--use-local-env>
+      $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:-use-local-env>
     )
   endif()
 endfunction()
