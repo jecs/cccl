@@ -889,7 +889,7 @@ _LIBCUDACXX_END_NAMESPACE_CUDA
 struct CUtensorMap_st;
 typedef struct CUtensorMap_st CUtensorMap;
 
-_LIBCUDACXX_BEGIN_NAMESPACE_CUDA_EXPERIMENTAL
+_LIBCUDACXX_BEGIN_NAMESPACE_CUDA_DEVICE_EXPERIMENTAL
 
 // - cp_async_bulk_global_to_shared
 // - cp_async_bulk_shared_to_global
@@ -1210,6 +1210,6 @@ void cp_async_bulk_wait_group_read()
     );
 }
 
-_LIBCUDACXX_END_NAMESPACE_CUDA_EXPERIMENTAL
+_LIBCUDACXX_END_NAMESPACE_CUDA_DEVICE_EXPERIMENTAL
 
 #endif // _LIBCUDACXX___CUDA_BARRIER_H
