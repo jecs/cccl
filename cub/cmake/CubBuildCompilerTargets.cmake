@@ -13,7 +13,6 @@ function(cub_build_compiler_targets)
 
   if ("MSVC" STREQUAL "${CMAKE_CXX_COMPILER_ID}")
     list(APPEND cxx_compile_definitions _ENABLE_EXTENDED_ALIGNED_STORAGE)
-    list(APPEND cuda_compile_options "-use-local-env")
 
     append_option_if_available("/W4" cxx_compile_options)
 
