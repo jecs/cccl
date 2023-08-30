@@ -34,9 +34,9 @@ $LIT_OPTIONS = @(
 
 configure $CMAKE_OPTIONS
 
-#source "./sccache_stats.sh" "start"
+sccache_stats('Start')
 Start-Process lit -Wait -NoNewWindow -ArgumentList $LIT_OPTIONS
-#source "./sccache_stats.sh" "stop"
+sccache_stats('Stop')
 
 If($CURRENT_PATH -ne "ci") {
     popd

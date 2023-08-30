@@ -45,7 +45,5 @@ jobs:
                                                                     cd cccl;
                                                                     git fetch --all;
                                                                     git checkout ${{github.ref_name}};
-                                                                    sccache -s;
-                                                                    ${{inputs.build_script}};
-                                                                    sccache -s;"
+                                                                    ${{inputs.build_script}};"
 
