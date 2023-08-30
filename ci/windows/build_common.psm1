@@ -1,10 +1,13 @@
 
 Param(
-    [Parameter(Mandatory)]
+    [Parameter(Mandatory = $true)]
     [Alias("cxx")]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet(11, 14, 17, 20)]
     [int]$CXX_STANDARD = 17,
-    [Parameter(Mandatory)]
+    [Parameter(Mandatory = $true)]
     [Alias("archs")]
+    [ValidateNotNullOrEmpty()]
     [string]$GPU_ARCHS = "70"
 )
 
@@ -51,21 +54,36 @@ Write-Host "BUILD_DIR=$BUILD_DIR"
 Write-Host "========================================"
 
 function configure {
-    param ($CMAKE_OPTIONS)
-    $FULL_CMAKE_OPTIONS = $COMMON_CMAKE_OPTIONS + $CMAKE_OPTIONS
+    Param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [Array]$CMAKE_OPTIONS
+    )
+    $FULL_CMAKE_OPTIONS = $script:COMMON_CMAKE_OPTIONS + $CMAKE_OPTIONS
     Start-Process cmake -Wait -NoNewWindow -ArgumentList $FULL_CMAKE_OPTIONS
 }
 
 function build {
-    param ($BUILD_NAME)
+    Param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$BUILD_NAME
+    )
     sccache_stats('Start')
-    Start-Process cmake -Wait -NoNewWindow -ArgumentList "--build $BUILD_DIR --parallel $PARALLEL_LEVEL"
+    Start-Process cmake -Wait -NoNewWindow -ArgumentList "--build $script:BUILD_DIR --parallel $script:PARALLEL_LEVEL"
     sccache_stats('Stop')
     echo "${BUILD_NAME} build complete"
 }
 
 function configure_and_build {
-    param ($BUILD_NAME, $CMAKE_OPTIONS)
+    Param(
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [string]$BUILD_NAME,
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [Array]$CMAKE_OPTIONS
+    )
     configure -CMAKE_OPTIONS $CMAKE_OPTIONS
     build -BUILD_NAME $BUILD_NAME
 }

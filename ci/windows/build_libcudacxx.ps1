@@ -1,8 +1,13 @@
 
 Param(
+    [Parameter(Mandatory = $true)]
     [Alias("cxx")]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet(11, 14, 17, 20)]
     [int]$CXX_STANDARD = 17,
+    [Parameter(Mandatory = $true)]
     [Alias("archs")]
+    [ValidateNotNullOrEmpty()]
     [string]$GPU_ARCHS = "70"
 )
 
