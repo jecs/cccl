@@ -918,7 +918,7 @@ class Configuration(object):
         if nvcc_host_compiler and self.cxx.type == 'nvcc':
             self.cxx.link_flags += ['-ccbin={0}'.format(nvcc_host_compiler)]
 
-        if self.cxx.type == 'msvc':
+        if self.is_windows:
             self.cxx.link_flags += ['-use-local-env']
 
         # Configure library path
