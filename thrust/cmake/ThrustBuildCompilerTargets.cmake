@@ -144,7 +144,7 @@ function(thrust_build_compiler_targets)
     # Use the local env instead of rebuilding it all the time
     target_compile_options(thrust.compiler_interface INTERFACE
       # If using CUDA w/ NVCC...
-      $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:-use-local-env>
+      $<$<COMPILE_LANG_AND_ID:CUDA,NVIDIA>:--use-local-env>
     )
   endif()
 
