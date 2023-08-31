@@ -18,9 +18,9 @@ $script:HOST_COMPILER  = (Get-Command "cl").source -replace '\\','/'
 $script:PARALLEL_LEVEL = (Get-WmiObject -class Win32_processor).NumberOfLogicalProcessors
 
 If($null -eq $env:DEVCONTAINER_NAME) {
-    $script:BUILD_DIR="../build/local"
+    $script:BUILD_DIR="$PSScriptRoot/../../build/local"
 } else {
-    $script:BUILD_DIR="../build/$DEVCONTAINER_NAME"
+    $script:BUILD_DIR="$PSScriptRoot/../../build/$DEVCONTAINER_NAME"
 }
 
 If(!(test-path -PathType container "../build")) {
@@ -61,6 +61,10 @@ function configure {
     )
     $FULL_CMAKE_OPTIONS = $script:COMMON_CMAKE_OPTIONS + $CMAKE_OPTIONS
     cmake $FULL_CMAKE_OPTIONS
+    $test_result = $LastExitCode
+    If ($test_result -ne 0) {
+        throw 'Step Failed'
+    }
 }
 
 function build {
@@ -71,8 +75,12 @@ function build {
     )
     sccache_stats('Start')
     cmake --build $script:BUILD_DIR --parallel $script:PARALLEL_LEVEL
+    $test_result = $LastExitCode
     sccache_stats('Stop')
     echo "${BUILD_NAME} build complete"
+    If ($test_result -ne 0) {
+        throw 'Step Failed'
+    }
 }
 
 function configure_and_build {

@@ -39,10 +39,18 @@ $LIT_OPTIONS = @(
 
 configure $CMAKE_OPTIONS
 
+pushd $BUILD_DIR/libcudacxx/
+
 sccache_stats('Start')
-Start-Process lit -Wait -NoNewWindow -ArgumentList $LIT_OPTIONS
+lit $LIT_OPTIONS
+$test_result = $LastExitCode
 sccache_stats('Stop')
 
+popd
 If($CURRENT_PATH -ne "ci") {
     popd
+}
+
+if ($test_result -ne 0) {
+    throw 'Step Failed'
 }
