@@ -57,10 +57,10 @@ function configure {
     Param(
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [Array]$CMAKE_OPTIONS
+        $CMAKE_OPTIONS
     )
     $FULL_CMAKE_OPTIONS = $script:COMMON_CMAKE_OPTIONS + $CMAKE_OPTIONS
-    Start-Process cmake -Wait -NoNewWindow -ArgumentList $FULL_CMAKE_OPTIONS
+    cmake $FULL_CMAKE_OPTIONS
 }
 
 function build {
@@ -70,7 +70,7 @@ function build {
         [string]$BUILD_NAME
     )
     sccache_stats('Start')
-    Start-Process cmake -Wait -NoNewWindow -ArgumentList "--build $script:BUILD_DIR --parallel $script:PARALLEL_LEVEL"
+    cmake --build $script:BUILD_DIR --parallel $script:PARALLEL_LEVEL
     sccache_stats('Stop')
     echo "${BUILD_NAME} build complete"
 }
@@ -82,7 +82,7 @@ function configure_and_build {
         [string]$BUILD_NAME,
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [Array]$CMAKE_OPTIONS
+        $CMAKE_OPTIONS
     )
     configure -CMAKE_OPTIONS $CMAKE_OPTIONS
     build -BUILD_NAME $BUILD_NAME
