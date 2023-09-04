@@ -21,7 +21,7 @@
 #ifndef TEST_COMPILER_NVRTC
 #include <cstdio>
 #include <cudaTypedefs.h>       // PFN_cuTensorMapEncodeTiled, CUtensorMap
-#endif
+#endif // !TEST_COMPILER_NVRTC
 
 // Suppress warning about barrier in shared memory
 TEST_NV_DIAG_SUPPRESS(static_var_with_dynamic_init)
