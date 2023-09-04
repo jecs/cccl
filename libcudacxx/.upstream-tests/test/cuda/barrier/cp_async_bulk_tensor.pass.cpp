@@ -18,7 +18,7 @@
 #include "test_macros.h"        // TEST_NV_DIAG_SUPPRESS
 
 // NVRTC does not support cuda.h (due to import of stdlib.h)
-#ifndef __CUDACC_RTC__
+#ifndef TEST_COMPILER_NVRTC
 #include <cstdio>
 #include <cudaTypedefs.h>       // PFN_cuTensorMapEncodeTiled, CUtensorMap
 #endif
