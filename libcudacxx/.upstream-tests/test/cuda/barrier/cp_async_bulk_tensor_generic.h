@@ -161,7 +161,7 @@ __device__ void test(std::initializer_list<int> smem_coord,
     if (threadIdx.x == 0) {
         // Fastest moving coordinate first.
         cp_tensor_global_to_shared(global_tensor_map, smem_coord, smem_buffer, bar);
-        token = bar.arrive_tx(1, sizeof(smem_buffer));
+        token = cuda::device::arrive_tx(bar, 1, sizeof(smem_buffer));
     } else {
         token = bar.arrive();
     }

@@ -47,7 +47,7 @@ __device__ void test()
     uint64_t token;
     if (threadIdx.x == 0) {
         cde::cp_async_bulk_global_to_shared(smem_buffer, gmem_buffer, sizeof(smem_buffer), bar);
-        token = bar.arrive_tx(1, sizeof(smem_buffer));
+        token = cuda::device::arrive_tx(bar, 1, sizeof(smem_buffer));
     } else {
         token = bar.arrive();
     }
