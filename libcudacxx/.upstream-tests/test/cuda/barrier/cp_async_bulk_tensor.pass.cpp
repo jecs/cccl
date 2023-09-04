@@ -123,7 +123,7 @@ PFN_cuTensorMapEncodeTiled get_cuTensorMapEncodeTiled() {
     void* driver_ptr = nullptr;
     cudaDriverEntryPointQueryResult driver_status;
     auto code = cudaGetDriverEntryPoint("cuTensorMapEncodeTiled", &driver_ptr, cudaEnableDefault, &driver_status);
-    assert(code == cudaSuccess, "Could not get driver API");
+    assert(code == cudaSuccess && "Could not get driver API");
     return reinterpret_cast<PFN_cuTensorMapEncodeTiled>(driver_ptr);
 }
 #endif // ! TEST_COMPILER_NVRTC
@@ -136,7 +136,7 @@ int main(int, char**)
 
         int * tensor_ptr = nullptr;
         auto code = cudaGetSymbolAddress((void**)&tensor_ptr, gmem_tensor);
-        assert(code == cudaSuccess, "getsymboladdress failed.");
+        assert(code == cudaSuccess && "getsymboladdress failed.");
 
         // https://docs.nvidia.com/cuda/cuda-driver-api/group__CUDA__TENSOR__MEMORY.html
         CUtensorMap local_tensor_map{};
@@ -172,9 +172,9 @@ int main(int, char**)
             CUtensorMapFloatOOBfill::CU_TENSOR_MAP_FLOAT_OOB_FILL_NONE
         );
 
-        asset(res == CUDA_SUCCESS, "tensormap creation failed.");
+        assert(res == CUDA_SUCCESS && "tensormap creation failed.");
         code = cudaMemcpyToSymbol(global_fake_tensor_map, &local_tensor_map, sizeof(CUtensorMap));
-        assert(code == cudaSuccess, "memcpytosymbol failed.");
+        assert(code == cudaSuccess && "memcpytosymbol failed.");
     ));
 
     NV_DISPATCH_TARGET(

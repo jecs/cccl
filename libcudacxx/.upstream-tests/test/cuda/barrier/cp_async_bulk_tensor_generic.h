@@ -205,7 +205,7 @@ PFN_cuTensorMapEncodeTiled get_cuTensorMapEncodeTiled() {
     void* driver_ptr = nullptr;
     cudaDriverEntryPointQueryResult driver_status;
     auto code = cudaGetDriverEntryPoint("cuTensorMapEncodeTiled", &driver_ptr, cudaEnableDefault, &driver_status);
-    assert(code == cudaSuccess, "Could not get driver API");
+    assert(code == cudaSuccess && "Could not get driver API");
     return reinterpret_cast<PFN_cuTensorMapEncodeTiled>(driver_ptr);
 }
 #endif
@@ -261,7 +261,7 @@ CUtensorMap map_encode(T *tensor_ptr, std::initializer_list<int> gmem_dims, std:
         CUtensorMapL2promotion::CU_TENSOR_MAP_L2_PROMOTION_NONE,
         CUtensorMapFloatOOBfill::CU_TENSOR_MAP_FLOAT_OOB_FILL_NONE);
 
-    assert(res == CUDA_SUCCESS, "tensormap creation failed.");
+    assert(res == CUDA_SUCCESS && "tensormap creation failed.");
 
     return tensor_map;
 }
