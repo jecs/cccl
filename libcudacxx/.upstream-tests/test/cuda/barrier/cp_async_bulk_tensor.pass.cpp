@@ -19,7 +19,6 @@
 
 // NVRTC does not support cuda.h (due to import of stdlib.h)
 #ifndef TEST_COMPILER_NVRTC
-#include <cstdio>
 #include <cudaTypedefs.h>       // PFN_cuTensorMapEncodeTiled, CUtensorMap
 #endif // !TEST_COMPILER_NVRTC
 
@@ -36,10 +35,8 @@ constexpr size_t gmem_len = GMEM_WIDTH * GMEM_HEIGHT;
 constexpr int SMEM_WIDTH = 32;     // Width of shared memory buffer (in # elements)
 constexpr int SMEM_HEIGHT = 8;      // Height of shared memory buffer (in # elements)
 
-// Use 24KB of shared memory space.
 static constexpr int buf_len = SMEM_HEIGHT * SMEM_WIDTH;
 __device__ int gmem_tensor[gmem_len];
-
 
 // We need a type with a size. On NVRTC, cuda.h cannot be imported, so we don't
 // have access to the definition of CUTensorMap (only to the declaration of CUtensorMap inside
@@ -86,12 +83,7 @@ __device__ void test(int base_i, int base_j)
             int gmem_lin_idx = (base_i + i) * GMEM_WIDTH + base_j + j;
             int smem_lin_idx = i * SMEM_WIDTH + j;
 
-            if (smem_buffer[smem_lin_idx] != gmem_lin_idx) {
-#ifndef __CUDACC_RTC__
-                printf("Failed at smem (%d, %d). Got %d. Expected %d.\n", i, j, smem_buffer[smem_lin_idx], gmem_lin_idx);
-#endif
-                __trap();
-            }
+            assert(smem_buffer[smem_lin_idx] == gmem_lin_idx);
         }
     }
 
@@ -113,8 +105,7 @@ __device__ void test(int base_i, int base_j)
     __threadfence();
     __syncthreads();
 
-    // // TEAR-DOWN: check that global memory is correct
-
+    // TEAR-DOWN: check that global memory is correct
     for (int i = 0; i < SMEM_HEIGHT; ++i) {
         for (int j = 0; j < SMEM_HEIGHT; ++j) {
             int gmem_lin_idx = (base_i + i) * GMEM_WIDTH + base_j + j;
@@ -127,17 +118,15 @@ __device__ void test(int base_i, int base_j)
     __syncthreads();
 }
 
-#ifndef __CUDACC_RTC__
+#ifndef TEST_COMPILER_NVRTC
 PFN_cuTensorMapEncodeTiled get_cuTensorMapEncodeTiled() {
     void* driver_ptr = nullptr;
     cudaDriverEntryPointQueryResult driver_status;
     auto code = cudaGetDriverEntryPoint("cuTensorMapEncodeTiled", &driver_ptr, cudaEnableDefault, &driver_status);
-    if (code != cudaSuccess) {
-        exit(1);
-    }
+    assert(code == cudaSuccess, "Could not get driver API");
     return reinterpret_cast<PFN_cuTensorMapEncodeTiled>(driver_ptr);
 }
-#endif
+#endif // ! TEST_COMPILER_NVRTC
 
 int main(int, char**)
 {
@@ -147,10 +136,7 @@ int main(int, char**)
 
         int * tensor_ptr = nullptr;
         auto code = cudaGetSymbolAddress((void**)&tensor_ptr, gmem_tensor);
-        if (code != cudaSuccess) {
-            std::printf("getsymboladdress failed.");
-            exit(1);
-        }
+        assert(code == cudaSuccess, "getsymboladdress failed.");
 
         // https://docs.nvidia.com/cuda/cuda-driver-api/group__CUDA__TENSOR__MEMORY.html
         CUtensorMap local_tensor_map{};
@@ -186,15 +172,9 @@ int main(int, char**)
             CUtensorMapFloatOOBfill::CU_TENSOR_MAP_FLOAT_OOB_FILL_NONE
         );
 
-        if (res != CUDA_SUCCESS) {
-            std::printf("tensormap creation failed.");
-            exit(1);
-        }
+        asset(res == CUDA_SUCCESS, "tensormap creation failed.");
         code = cudaMemcpyToSymbol(global_fake_tensor_map, &local_tensor_map, sizeof(CUtensorMap));
-        if (code != cudaSuccess) {
-            std::printf("memcpytosymbol failed.");
-            exit(1);
-        }
+        assert(code == cudaSuccess, "memcpytosymbol failed.");
     ));
 
     NV_DISPATCH_TARGET(

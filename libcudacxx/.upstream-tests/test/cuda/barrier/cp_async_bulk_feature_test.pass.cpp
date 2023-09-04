@@ -15,7 +15,6 @@
 
 #include <cuda/barrier>
 
-
 #if defined(__CUDA_MINIMUM_ARCH__) && 900 <= __CUDA_MINIMUM_ARCH__
 # ifndef __cccl_lib_experimental_ctk12_cp_async_exposure
 static_assert(false, "should define __cccl_lib_experimental_ctk12_cp_async_exposure");

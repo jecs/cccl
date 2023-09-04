@@ -21,14 +21,13 @@
 #include "test_macros.h"        // TEST_NV_DIAG_SUPPRESS
 
 // NVRTC does not support cuda.h (due to import of stdlib.h)
-#ifndef __CUDACC_RTC__
+#ifndef TEST_COMPILER_NVRTC
 #include <cstdio>
 #include <cudaTypedefs.h>       // PFN_cuTensorMapEncodeTiled, CUtensorMap
-#endif
+#endif // ! TEST_COMPILER_NVRTC
 
 // Suppress warning about barrier in shared memory
 TEST_NV_DIAG_SUPPRESS(static_var_with_dynamic_init)
-
 
 using barrier = cuda::barrier<cuda::thread_scope_block>;
 namespace cde = cuda::device::experimental;
@@ -38,8 +37,7 @@ namespace cde = cuda::device::experimental;
  *
  * The functions below help convert Nd coordinates into something useful.
  *
- *  */
-
+ */
 
 // Compute the total number of elements in a tensor
 constexpr __host__ __device__ int tensor_len(std::initializer_list<int> dims) {
@@ -74,7 +72,6 @@ int smem_lin_idx_to_gmem_lin_idx(
     }
     return gmem_lin_idx;
 }
-
 
 __device__ inline void cp_tensor_global_to_shared(
     CUtensorMap* tensor_map,
@@ -173,12 +170,7 @@ __device__ void test(std::initializer_list<int> smem_coord,
     // Check smem
     for (int i = threadIdx.x; i < smem_len; i += blockDim.x) {
         int gmem_lin_idx = smem_lin_idx_to_gmem_lin_idx(i, smem_coord, smem_dims, gmem_dims);
-        if (gmem_lin_idx != gmem_lin_idx) {
-#ifndef __CUDACC_RTC__
-            printf("Failed at smem (%d). Got %d. Expected %d.\n", i, gmem_lin_idx, gmem_lin_idx);
-#endif
-            __trap();
-        }
+        assert(smem_buffer[i] == gmem_lin_idx);
     }
 
     __syncthreads();
@@ -203,29 +195,22 @@ __device__ void test(std::initializer_list<int> smem_coord,
     for (int i = threadIdx.x; i < smem_len; i += blockDim.x) {
         int gmem_lin_idx = smem_lin_idx_to_gmem_lin_idx(i, smem_coord, smem_dims, gmem_dims);
 
-        if (gmem_tensor[gmem_lin_idx] != 2 * gmem_lin_idx + 1) {
-#ifndef __CUDACC_RTC__
-            printf("Failed at lin idx (%d). Got %d. Expected %d.\n", i, gmem_tensor[gmem_lin_idx], 2 * gmem_lin_idx + 1);
-#endif
-            __trap();
-        }
+        assert(gmem_tensor[gmem_lin_idx] == 2 * gmem_lin_idx + 1);
     }
     __syncthreads();
 }
 
-#ifndef __CUDACC_RTC__
+#ifndef TEST_COMPILER_NVRTC
 PFN_cuTensorMapEncodeTiled get_cuTensorMapEncodeTiled() {
     void* driver_ptr = nullptr;
     cudaDriverEntryPointQueryResult driver_status;
     auto code = cudaGetDriverEntryPoint("cuTensorMapEncodeTiled", &driver_ptr, cudaEnableDefault, &driver_status);
-    if (code != cudaSuccess) {
-        exit(1);
-    }
+    assert(code == cudaSuccess, "Could not get driver API");
     return reinterpret_cast<PFN_cuTensorMapEncodeTiled>(driver_ptr);
 }
 #endif
 
-#ifndef __CUDACC_RTC__
+#ifndef TEST_COMPILER_NVRTC
 template <typename T>
 CUtensorMap map_encode(T *tensor_ptr, std::initializer_list<int> gmem_dims, std::initializer_list<int> smem_dims) {
     // https://docs.nvidia.com/cuda/cuda-driver-api/group__CUDA__TENSOR__MEMORY.html
@@ -276,17 +261,10 @@ CUtensorMap map_encode(T *tensor_ptr, std::initializer_list<int> gmem_dims, std:
         CUtensorMapL2promotion::CU_TENSOR_MAP_L2_PROMOTION_NONE,
         CUtensorMapFloatOOBfill::CU_TENSOR_MAP_FLOAT_OOB_FILL_NONE);
 
-    if (res != CUDA_SUCCESS) {
-        std::printf("tensormap creation failed.");
-        exit(1);
-    }
+    assert(res == CUDA_SUCCESS, "tensormap creation failed.");
 
     return tensor_map;
 }
-#endif  //__CUDACC_RTC__
-
-
-
-
+#endif  // ! TEST_COMPILER_NVRTC
 
 #endif // TEST_CP_ASYNC_BULK_TENSOR_GENERIC_H_

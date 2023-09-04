@@ -16,7 +16,6 @@
 #include <cuda/barrier>
 #include "test_macros.h" // TEST_NV_DIAG_SUPPRESS
 
-
 // Suppress warning about barrier in shared memory
 TEST_NV_DIAG_SUPPRESS(static_var_with_dynamic_init)
 
@@ -64,7 +63,6 @@ __global__ void test_fences_async_group(void * gmem) {
   cde::cp_async_bulk_wait_group_read<7>();
   cde::cp_async_bulk_wait_group_read<8>();
 }
-
 
 int main(int, char**){
     return 0;
