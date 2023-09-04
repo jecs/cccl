@@ -17,7 +17,6 @@
 #include <cuda/std/utility> // cuda::std::move
 #include "test_macros.h" // TEST_NV_DIAG_SUPPRESS
 
-
 // Suppress warning about barrier in shared memory
 TEST_NV_DIAG_SUPPRESS(static_var_with_dynamic_init)
 
