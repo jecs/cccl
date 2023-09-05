@@ -71,9 +71,7 @@ __device__ void test()
 
     // TEAR-DOWN: check that global memory is correct
     for (int i = threadIdx.x; i < buf_len; i += blockDim.x) {
-        if (gmem_buffer[i] != 2 * i) {
-            __trap();
-        }
+        assert(gmem_buffer[i] == 2 * i);
     }
 }
 

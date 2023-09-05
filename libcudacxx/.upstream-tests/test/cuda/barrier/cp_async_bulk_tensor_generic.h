@@ -88,7 +88,7 @@ __device__ inline void cp_tensor_global_to_shared(
         case 4: cde::cp_async_bulk_tensor_4d_global_to_shared(smem, tensor_map, idxs[0], idxs[1], idxs[2], idxs[3], bar); break;
         case 5: cde::cp_async_bulk_tensor_5d_global_to_shared(smem, tensor_map, idxs[0], idxs[1], idxs[2], idxs[3], idxs[4], bar); break;
         default:
-            __trap();
+            assert(false && "Wrong number of dimensions.");
     }
 }
 
@@ -106,7 +106,7 @@ __device__ inline void cp_tensor_shared_to_global(
         case 4: cde::cp_async_bulk_tensor_4d_shared_to_global(tensor_map, idxs[0], idxs[1], idxs[2], idxs[3], smem); break;
         case 5: cde::cp_async_bulk_tensor_5d_shared_to_global(tensor_map, idxs[0], idxs[1], idxs[2], idxs[3], idxs[4], smem); break;
         default:
-            __trap();
+            assert(false && "Wrong number of dimensions.");
     }
 }
 

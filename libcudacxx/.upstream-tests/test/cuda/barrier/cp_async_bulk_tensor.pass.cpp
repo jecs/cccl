@@ -112,9 +112,7 @@ __device__ void test(int base_i, int base_j)
         for (int j = 0; j < SMEM_HEIGHT; ++j) {
             int gmem_lin_idx = (base_i + i) * GMEM_WIDTH + base_j + j;
 
-            if (gmem_tensor[gmem_lin_idx] != 2 * gmem_lin_idx + 1) {
-                __trap();
-            }
+            assert(gmem_tensor[gmem_lin_idx] == 2 * gmem_lin_idx + 1);
         }
     }
     __syncthreads();
