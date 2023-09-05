@@ -10,6 +10,8 @@
 //
 // UNSUPPORTED: libcpp-has-no-threads
 // UNSUPPORTED: pre-sm-90
+//
+// NVRTC_SKIP_KERNEL_RUN
 
 // <cuda/barrier>
 
